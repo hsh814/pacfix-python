@@ -10,20 +10,62 @@ def get_valuations(input_dir: str) -> List[str]:
             valuations.append(f.read())
     return valuations
 
-def parse_valuation(valuations: List[str]) -> List[Dict[int, int]]:
-    vals = list()
-    seen = set()
-    for valuation in valuations:
-        if valuation in seen:
-            continue
-        seen.add(valuation)
+# parse valuation and returns neg, pos valuations
+def parse_valuation(neg: List[str], pos: List[str]) -> Tuple[List[Dict[int, int]], List[Dict[int, int]]]:
+    neg_vals = list()
+    pos_vals = list()
+    for valuation in neg:
+        groups: List[Dict[int, int]] = list()
+        in_group = False
         val_map = dict()
         for line in valuation.split("\n"):
-            if len(line) > 2:
+            if line.startswith("#") or len(line) < 3:
+                continue
+            if line.startswith("[begin]"):
+                in_group = True
+                val_map = dict()
+            elif line.startswith("[end]"):
+                in_group = False
+                groups.append(val_map)                
+            elif in_group:
                 id, val = line.split()
                 val_map[int(id)] = int(val)
-        vals.append(val_map)
-    return vals
+        # Only last one is negative
+        for i in range(len(groups)):
+            val_map = groups[i]
+            if i < len(groups) - 1:
+                pos_vals.append(val_map)
+            else:
+                neg_vals.append(val_map)
+    for valuation in pos:
+        groups: List[Dict[int, int]] = list()
+        in_group = False
+        val_map = dict()
+        for line in valuation.split("\n"):
+            if line.startswith("#") or len(line) < 3:
+                continue
+            if line.startswith("[begin]"):
+                in_group = True
+                val_map = dict()
+            elif line.startswith("[end]"):
+                in_group = False
+                groups.append(val_map)                
+            elif in_group:
+                id, val = line.split()
+                val_map[int(id)] = int(val)
+        for val_map in groups:
+            pos_vals.append(val_map)
+    return neg_vals, pos_vals
+
+def filter_duplicate(valuations: List[Dict[int, int]]) -> List[Dict[int, int]]:
+    seen = set()
+    result = list()
+    for val in valuations:
+        key = frozenset(val.items())
+        if key not in seen:
+            seen.add(key)
+            result.append(val)
+    return result
 
 class VarType(enum.Enum):
     INT = 0
