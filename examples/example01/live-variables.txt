@@ -1,0 +1,5 @@
+1 x int
+2 y int
+3 z bool
+4 b int
+5 c int
