@@ -56,7 +56,7 @@ Output file name given by `-o` or `--output`. If not given, it will be standard 
 [metadata] [hypothesis-space] [original 1857] [final 1]
 [metadata] [valuation] [neg 3] [pos 48] [uniq 51] [init-neg 4] [init-pos 54] [non-uniq 58]
 [metadata] [pac] [delta 0.01] [eps 0.09029745462721749]
-[metadata] [pac-no-uniq] [delta 0.01] [eps 0.09029745462721749]
+[metadata] [pac-no-uniq] [delta 0.01] [eps 0.07939948596531193]
 [final] --------------
 [invariant] [expr (c != 0)]
 ```

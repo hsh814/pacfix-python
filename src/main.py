@@ -62,7 +62,8 @@ def main(argv: List[str]):
         output.write(f"[metadata] [valuation] [neg {len(neg_vals)}] [pos {len(pos_vals)}] [uniq {samples}] [init-neg {initial_neg}] [init-pos {initial_pos}] [non-uniq {non_uniq_samples}]\n")
         pac_epsilon = (1 / samples) * (math.log(len(hypothesis_space)) + (math.log(1 / pac_delta)))
         output.write(f"[metadata] [pac] [delta {pac_delta}] [eps {pac_epsilon}]\n")
-        output.write(f"[metadata] [pac-no-uniq] [delta {pac_delta}] [eps {pac_epsilon}]\n")
+        pac_epsilon_no_uniq = (1 / non_uniq_samples) * (math.log(len(hypothesis_space)) + (math.log(1 / pac_delta)))
+        output.write(f"[metadata] [pac-no-uniq] [delta {pac_delta}] [eps {pac_epsilon_no_uniq}]\n")
         output.write("[final] --------------\n")
         for inv in hypothesis_space:
             output.write(f"[invariant] [expr {inv.to_str(live_vars)}]\n")
