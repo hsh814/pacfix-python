@@ -2,6 +2,7 @@
 import os
 import sys
 import argparse
+import math
 
 import synthesis
 import utils
@@ -21,10 +22,12 @@ def main(argv: List[str]):
         argparser.add_argument("--input-dir", "-i", help="Input directory", required=True)
         argparser.add_argument("--live-vars", "-l", help="Live variables", required=True)
         argparser.add_argument("--output", "-o", help="Output file", required=False, default="")
+        argparser.add_argument("--pac-delta", "-e", help="delta value for pac learning", required=False, default=0.01)
         args = argparser.parse_args(argv[2:])
         input_dir = args.input_dir
         live_vars_file = args.live_vars
         output_file = args.output
+        pac_delta = float(args.pac_delta)
         output = sys.stdout
         if output_file:
             output = open(output_file, "w")
@@ -51,10 +54,15 @@ def main(argv: List[str]):
                 int_vars += 1
         output.write(f"[metadata] [live-variables] [total {len(live_vars)}] [int {int_vars}]\n")
         output.write(f"[metadata] [hypothesis-space] [original {original_size}] [final {len(hypothesis_space)}]\n")
-        output.write(f"[metadata] [valuation] [neg {len(neg_vals)}] [pos {len(pos_vals)}]\n")
-        output.write("--------final---------\n")
-        output.write("\n".join([inv.to_str(live_vars) for inv in hypothesis_space]))
-        output.write("\n")
+        samples = len(neg_vals) + len(pos_vals)
+        non_uniq_samples = len(neg_vals) + len(pos_vals)
+        output.write(f"[metadata] [valuation] [neg {len(neg_vals)}] [pos {len(pos_vals)}] [uniq {samples}] [non-uniq {non_uniq_samples}]\n")
+        pac_epsilon = (1 / samples) * (math.log(len(hypothesis_space)) + (math.log(1 / pac_delta)))
+        output.write(f"[metadata] [pac] [delta {pac_delta}] [eps {pac_epsilon}]\n")
+        output.write(f"[metadata] [pac-no-uniq] [delta {pac_delta}] [eps {pac_epsilon}]\n")
+        output.write("[final] --------------\n")
+        for inv in hypothesis_space:
+            output.write(f"[invariant] [expr {inv.to_str(live_vars)}]\n")
         
 
 if __name__ == "__main__":

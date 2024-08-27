@@ -25,7 +25,7 @@ Second column is variable name.
 Third column is variable type.
 
 ### Input directory
-Input directory given by `-i` or `--input-dir` [input-dir](./examples/example01/mem)
+Input directory given by `-i` or `--input-dir` [input-dir](./examples/example01/mem).
 Input directory contains `neg` and `pos` subdirectories.
 Each of them contains valuation files.
 ```

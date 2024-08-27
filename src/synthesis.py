@@ -3,6 +3,7 @@ from typing import List, Set, Dict, Tuple, Union
 import utils
 
 import enum
+import sys
 
 class InvariantType(enum.Enum):
     VAR = 0
@@ -136,7 +137,6 @@ class Synthesizer():
         # Evaluate the given invariant on the given patches
         inv_type = inv.inv_type
         if inv_type == InvariantType.VAR:
-            print(f"val({inv.data}) = {vals[inv.data]}")
             return vals[inv.data]
         elif inv_type == InvariantType.CONST:
             return inv.data
@@ -195,13 +195,13 @@ class Synthesizer():
                     valid = False
                     break
             if not valid:
-                print(f"Invalid pos: {inv} from {vals}")
+                print(f"Invalid pos: {inv} from {vals}", file=sys.stderr)
                 continue
             # positive validation: invariant should be true
             for vals in pos_vals:
                 if not self.evaluate(inv, vals):
                     valid = False
-                    print(f"Invalid pos: {inv} from {vals}")
+                    print(f"Invalid pos: {inv} from {vals}", file=sys.stderr)
                     break
             if valid:
                 refined.append(inv)
