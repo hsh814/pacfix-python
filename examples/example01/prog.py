@@ -18,11 +18,18 @@ def my_program(x: int, y: int, z: int) -> int:
 
 
 for i in range(20):
-    a, res, crash = my_program(random.randint(0, 10), random.randint(0, 10), random.randint(0, 1))
-    if crash:
+    res_str = ""
+    is_crash = False
+    for j in range(random.randint(1, 5)):
+        a, res, crash = my_program(random.randint(0, 10), random.randint(0, 10), random.randint(0, 1))
+        res_str += "[begin]\n" + res + "[end]\n"
+        if crash:
+            is_crash = True
+            break
+    if is_crash:
         with open(f"mem/neg/crash_{i}.txt", "w") as f:
-            f.write(res)
+            f.write(res_str)
     else:
         with open(f"mem/pos/output_{i}.txt", "w") as f:
-            f.write(res)
+            f.write(res_str)
 my_program(1, 2, 0)  

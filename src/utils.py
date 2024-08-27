@@ -12,7 +12,11 @@ def get_valuations(input_dir: str) -> List[str]:
 
 def parse_valuation(valuations: List[str]) -> List[Dict[int, int]]:
     vals = list()
+    seen = set()
     for valuation in valuations:
+        if valuation in seen:
+            continue
+        seen.add(valuation)
         val_map = dict()
         for line in valuation.split("\n"):
             if len(line) > 2:

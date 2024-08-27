@@ -29,14 +29,24 @@ Input directory given by `-i` or `--input-dir` [input-dir](./examples/example01/
 Input directory contains `neg` and `pos` subdirectories.
 Each of them contains valuation files.
 ```
-1 6
-2 6
+[begin]
+1 7
+2 1
 3 0
-4 12
-5 0
+4 8
+5 6
+[end]
+[begin]
+1 1
+2 7
+3 1
+4 8
+5 -6
+[end]
 ```
 First column is variable id.
 Second column is value.
+For each iteration, write `[begin]` and `[end]`.
 
 ## Output
 Output file name given by `-o` or `--output`. If not given, it will be standard out.
