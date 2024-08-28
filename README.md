@@ -2,7 +2,7 @@
 Python re-implementation of [pacfix](https://github.com/pslhy/pacfix/tree/main).
 
 ## Usage
-You can see examples in [examples](./examples/) directory.
+To see how it works, check out the examples in the [examples](./examples/) directory.
 
 ```shell
 cd examples/example01
@@ -11,7 +11,7 @@ python3 ../../src/main.py run -i ./mem -l live-variables.txt
 
 ## Inputs
 ### live variables file
-File name given by `-l` or `--live-vars` [live-variables.txt](./examples/example01/live-variables.txt).
+Specify the live variables file using `-l` or `--live-vars` [live-variables.txt](./examples/example01/live-variables.txt).
 
 ```
 1 x int
@@ -20,14 +20,12 @@ File name given by `-l` or `--live-vars` [live-variables.txt](./examples/example
 4 b int
 5 c int
 ```
-First column is variable id.
-Second column is variable name.
-Third column is variable type.
+Each line lists a variable's ID, name, and type, separated by spaces.
 
 ### Input directory
-Input directory given by `-i` or `--input-dir` [input-dir](./examples/example01/mem).
-Input directory contains `neg` and `pos` subdirectories.
-Each of them contains valuation files.
+Specify the input directory using `-i` or `--input-dir` [input-dir](./examples/example01/mem).
+
+The input directory should contain neg and pos subdirectories, each with valuation files.
 ```
 [begin]
 1 7
@@ -44,12 +42,12 @@ Each of them contains valuation files.
 5 -6
 [end]
 ```
-First column is variable id.
-Second column is value.
-For each iteration, write `[begin]` and `[end]`.
+Each file should list variable IDs and their corresponding values. Multiple iterations can be included, with each iteration separated by [begin] and [end].
 
 ## Output
-Output file name given by `-o` or `--output`. If not given, it will be standard out.
+Specify the output file using `-o` or `--output`. 
+
+If not specified, the output will be printed to the standard output.
 
 ```
 [metadata] [live-variables] [total 5] [int 4]
