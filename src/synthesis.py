@@ -195,7 +195,7 @@ class Synthesizer():
                     valid = False
                     break
             if not valid:
-                print(f"Invalid pos: {inv} from {vals}", file=sys.stderr)
+                print(f"Invalid neg: {inv} from {vals}", file=sys.stderr)
                 continue
             # positive validation: invariant should be true
             for vals in pos_vals:
