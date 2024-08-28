@@ -49,23 +49,23 @@ def main(argv: List[str]):
         initial_pos = len(pos_vals_init)
         neg_vals = utils.filter_duplicate(neg_vals_init)
         pos_vals = utils.filter_duplicate(pos_vals_init)
-        hypothesis_space = synthesizer.validate(hypothesis_space, neg_vals, pos_vals)
+        refined_space = synthesizer.validate(hypothesis_space, neg_vals, pos_vals)
         # write output
         int_vars = 0
         for v in live_vars.values():
             if v.var_type == utils.VarType.INT:
                 int_vars += 1
         output.write(f"[metadata] [live-variables] [total {len(live_vars)}] [int {int_vars}]\n")
-        output.write(f"[metadata] [hypothesis-space] [original {original_size}] [final {len(hypothesis_space)}]\n")
+        output.write(f"[metadata] [hypothesis-space] [original {original_size}] [final {len(refined_space)}]\n")
         samples = len(neg_vals) + len(pos_vals)
         non_uniq_samples = initial_neg + initial_pos
         output.write(f"[metadata] [valuation] [neg {len(neg_vals)}] [pos {len(pos_vals)}] [uniq {samples}] [init-neg {initial_neg}] [init-pos {initial_pos}] [non-uniq {non_uniq_samples}]\n")
-        pac_epsilon = (1 / samples) * (math.log(len(hypothesis_space)) + (math.log(1 / pac_delta)))
+        pac_epsilon = (1 / samples) * (math.log(len(refined_space)) + (math.log(1 / pac_delta)))
         output.write(f"[metadata] [pac] [delta {pac_delta}] [eps {pac_epsilon}]\n")
-        pac_epsilon_no_uniq = (1 / non_uniq_samples) * (math.log(len(hypothesis_space)) + (math.log(1 / pac_delta)))
+        pac_epsilon_no_uniq = (1 / non_uniq_samples) * (math.log(len(refined_space)) + (math.log(1 / pac_delta)))
         output.write(f"[metadata] [pac-no-uniq] [delta {pac_delta}] [eps {pac_epsilon_no_uniq}]\n")
         output.write("[final] --------------\n")
-        for inv in hypothesis_space:
+        for inv in refined_space:
             output.write(f"[invariant] [expr {inv.to_str(live_vars)}]\n")
         
 
