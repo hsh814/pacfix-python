@@ -54,3 +54,40 @@ class Invariant():
             return str(self.data)
         else:
             return f"({self.left.to_str(lv)} {INVARIANT_MAP[self.inv_type]} {self.right.to_str(lv)})"
+        
+
+class InvariantVisitor():
+    def __init__(self):
+        pass
+    
+    def visit(self, inv: Invariant):
+        if inv.inv_type == InvariantType.VAR:
+            self.visit_var(inv)
+        elif inv.inv_type == InvariantType.CONST:
+            self.visit_const(inv)
+        else:
+            self.visit_operation(inv)
+    
+    def visit_var(self, inv: Invariant):
+        pass
+    
+    def visit_const(self, inv: Invariant):
+        pass
+    
+    def visit_operation(self, inv: Invariant):
+        if inv.left:
+            self.visit(inv.left)
+        if inv.right:
+            self.visit(inv.right)
+
+class VariableCollector(InvariantVisitor):
+    variables: Set[int]
+    def __init__(self):
+        self.variables = set()
+    
+    def visit_var(self, inv: Invariant):
+        self.variables.add(inv.data)
+    
+    def get_vars(self) -> Set[int]:
+        return self.variables
+
