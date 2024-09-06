@@ -1,5 +1,6 @@
 import os
 import enum
+import math
 
 from typing import List, Set, Dict, Tuple
 
@@ -57,6 +58,51 @@ def parse_valuation(neg: List[str], pos: List[str]) -> Tuple[List[Dict[int, int]
             pos_vals.append(val_map)
     return neg_vals, pos_vals
 
+def parse_valuations_uni(neg: List[str], pos: List[str]) -> List[Dict[int, int]]:
+    neg_vals = list()
+    pos_vals = list()
+    for valuation in neg:
+        groups: List[Dict[int, int]] = list()
+        val_map = dict()
+        for line in valuation.split("\n"):
+            if line.startswith("#") or len(line) < 3:
+                continue
+            if line.startswith("----------------------------"):
+                groups.append(val_map)
+                val_map = dict() 
+            elif line.startswith("__valuation:"):
+                value_str = line.removeprefix("__valuation:").strip()
+                tokens = value_str.split()
+                id = tokens[4].strip()
+                val = tokens[5].strip()
+                val_map[int(id)] = int(val)
+        # Only last one is negative
+        for i in range(len(groups)):
+            val_map = groups[i]
+            if i < len(groups) - 1:
+                pos_vals.append(val_map)
+            else:
+                neg_vals.append(val_map)
+    for valuation in pos:
+        groups: List[Dict[int, int]] = list()
+        in_group = False
+        val_map = dict()
+        for line in valuation.split("\n"):
+            if line.startswith("#") or len(line) < 3:
+                continue
+            if line.startswith("----------------------------"):
+                groups.append(val_map)
+                val_map = dict() 
+            elif line.startswith("__valuation:"):
+                value_str = line.removeprefix("__valuation:").strip()
+                tokens = value_str.split()
+                id = tokens[4].strip()
+                val = tokens[5].strip()
+                val_map[int(id)] = int(val)
+        for val_map in groups:
+            pos_vals.append(val_map)
+    return neg_vals, pos_vals
+
 def filter_duplicate(valuations: List[Dict[int, int]]) -> List[Dict[int, int]]:
     seen = set()
     result = list()
@@ -97,3 +143,7 @@ def get_live_vars(live_vars_file: str) -> Dict[int, LiveVariable]:
                 live_vars[int(id)] = LiveVariable(int(id), name, var_type)
     return live_vars
 
+def calculate_pac(samples: int, hypothesis_space: int, delta: float) -> float:
+    if hypothesis_space == 0 or samples == 0:
+        return 0
+    return (1 / samples) * (math.log(hypothesis_space) + (math.log(1 / delta)))
