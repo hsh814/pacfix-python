@@ -1,5 +1,6 @@
 import os
 import enum
+import math
 
 from typing import List, Set, Dict, Tuple
 
@@ -142,3 +143,7 @@ def get_live_vars(live_vars_file: str) -> Dict[int, LiveVariable]:
                 live_vars[int(id)] = LiveVariable(int(id), name, var_type)
     return live_vars
 
+def calculate_pac(samples: int, hypothesis_space: int, delta: float) -> float:
+    if hypothesis_space == 0 or samples == 0:
+        return 0
+    return (1 / samples) * (math.log(hypothesis_space) + (math.log(1 / delta)))
