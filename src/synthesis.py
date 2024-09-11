@@ -37,6 +37,14 @@ class Synthesizer():
             invariants.append(Invariant(InvariantType.NE, Invariant(InvariantType.VAR, data=v.id), Invariant(InvariantType.CONST, data=0)))
         return invariants
     
+    def gen_ne_const(self, var: List[utils.LiveVariable]) -> List[Invariant]:
+        invariants = list()
+        const_list = self.get_const_list(-10, 10)
+        for v in var:
+            for i in const_list:
+                invariants.append(Invariant(InvariantType.NE, Invariant(InvariantType.VAR, data=v.id), Invariant(InvariantType.CONST, data=i)))
+        return invariants
+    
     def gen_ge_const(self, var: List[utils.LiveVariable]) -> List[Invariant]:
         invariants = list()
         const_list = self.get_const_list(-10, 10)
@@ -118,19 +126,21 @@ class Synthesizer():
         live_vars = list(self.live_vars.values())
         int_live_vars = [v for v in live_vars if v.var_type == utils.VarType.INT]
         invariants = list()
-        # 1. Equal to a constant
+        # Equal to a constant
         invariants.extend(self.gen_eq_const(int_live_vars))
-        # 2. Non zero
+        # Non zero
         invariants.extend(self.gen_non_zero(live_vars))
-        # 3. Greater than or equal to a constant
+        # Not equal to a constant
+        invariants.extend(self.gen_ne_const(int_live_vars))
+        # Greater than or equal to a constant
         invariants.extend(self.gen_ge_const(int_live_vars))
-        # 4. Less than or equal to a constant
+        # Less than or equal to a constant
         invariants.extend(self.gen_le_const(int_live_vars))
-        # 5. Greater than or equal to a variable
+        # Greater than or equal to a variable
         invariants.extend(self.gen_ge_var(live_vars))
-        # 6. Diff lower than a constant
+        # Diff lower than a constant
         invariants.extend(self.gen_diff_ge_const(live_vars))
-        # 7. Diff greater than a constant
+        # Diff greater than a constant
         invariants.extend(self.gen_diff_ge_const(live_vars))
         return invariants
         
