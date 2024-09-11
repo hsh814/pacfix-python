@@ -64,6 +64,7 @@ def run_uni(argv: List[str]):
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--input-dir", "-i", help="Input directory", required=True)
     argparser.add_argument("--live-vars", "-l", help="Live variables", required=True)
+    argparser.add_argument("--lv-file", "-f", help="Live variables file those are actually used", required=False, default="")
     argparser.add_argument("--output", "-o", help="Output file", required=False, default="")
     argparser.add_argument("--pac-delta", "-d", help="delta value for pac learning", required=False, default=0.01)
     args = argparser.parse_args(argv)
@@ -81,6 +82,9 @@ def run_uni(argv: List[str]):
             sys.exit(1)
     # create initial hypothesis space
     live_vars = utils.get_live_vars(live_vars_file)
+    if args.lv_file != "":
+        used_lvs = utils.get_lv_file(args.lv_file)
+        live_vars = {k: v for k, v in live_vars.items() if v.name in used_lvs}
     synthesizer = synthesis.Synthesizer(live_vars)
     hypothesis_space = synthesizer.synthesize()
     original_size = len(hypothesis_space)

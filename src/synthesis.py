@@ -42,6 +42,8 @@ class Synthesizer():
         const_list = self.get_const_list(-10, 10)
         for v in var:
             for i in const_list:
+                if i == 0:
+                    continue
                 invariants.append(Invariant(InvariantType.NE, Invariant(InvariantType.VAR, data=v.id), Invariant(InvariantType.CONST, data=i)))
         return invariants
     

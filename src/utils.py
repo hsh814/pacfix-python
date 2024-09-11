@@ -94,7 +94,7 @@ def parse_valuations_uni(neg: List[str], pos: List[str]) -> List[Dict[int, int]]
                 groups.append(val_map)
                 val_map = dict() 
             elif line.startswith("__valuation:"):
-                value_str = line.removeprefix("__valuation:").strip()
+                value_str = line[len("__valuation:"):].strip()
                 tokens = value_str.split()
                 id = tokens[4].strip()
                 val = tokens[5].strip()
@@ -131,6 +131,12 @@ class LiveVariable():
             self.var_type = VarType.BOOL
         else:
             self.var_type = VarType.PTR
+    
+    def __str__(self):
+        return f"LiveVariable(id={self.id}, name={self.name}, var_type={self.var_type})"
+    
+    def __repr__(self):
+        return self.__str__()
 
 
 def get_live_vars(live_vars_file: str) -> Dict[int, LiveVariable]:
@@ -141,6 +147,15 @@ def get_live_vars(live_vars_file: str) -> Dict[int, LiveVariable]:
             if len(line) > 2:
                 id, name, var_type = line.split()
                 live_vars[int(id)] = LiveVariable(int(id), name, var_type)
+    return live_vars
+
+
+def get_lv_file(lv_file: str) -> Set[str]:
+    live_vars = set()
+    with open(lv_file, "r") as f:
+        for line in f:
+            if len(line.strip()) > 0:
+                live_vars.add(line.strip())
     return live_vars
 
 def calculate_pac(samples: int, hypothesis_space: int, delta: float) -> float:
