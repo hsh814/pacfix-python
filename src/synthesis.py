@@ -138,10 +138,10 @@ class Synthesizer():
         invariants.extend(self.gen_le_const(int_live_vars))
         # Greater than or equal to a variable
         invariants.extend(self.gen_ge_var(live_vars))
-        # Diff lower than a constant
+        # Diff greater or equal than a constant
         invariants.extend(self.gen_diff_ge_const(live_vars))
-        # Diff greater than a constant
-        invariants.extend(self.gen_diff_ge_const(live_vars))
+        # Div result greater than a constant
+        invariants.extend(self.gen_ge_div_const(live_vars))
         return invariants
         
     def validate(self, hypothesis_space: List[Invariant], neg_vals, pos_vals) -> List[Invariant]:
