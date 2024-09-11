@@ -1,7 +1,30 @@
 from typing import List, Set, Dict, Tuple, Union
 import enum
 
-import utils
+class VarType(enum.Enum):
+    INT = 0
+    BOOL = 1
+    PTR = 2
+
+class LiveVariable():
+    id: int
+    name: str
+    var_type: VarType
+    def __init__(self, id: int, name: str, var_type: str):
+        self.id = id
+        self.name = name
+        if var_type == "int":
+            self.var_type = VarType.INT
+        elif var_type == "bool":
+            self.var_type = VarType.BOOL
+        else:
+            self.var_type = VarType.PTR
+    
+    def __str__(self):
+        return f"LiveVariable(id={self.id}, name={self.name}, var_type={self.var_type})"
+    
+    def __repr__(self):
+        return self.__str__()
 
 class InvariantType(enum.Enum):
     VAR = 0
@@ -52,7 +75,7 @@ class Invariant():
     def __repr__(self) -> str:
         return str(self)
     
-    def to_str(self, lv: Dict[int, utils.LiveVariable]) -> str:
+    def to_str(self, lv: Dict[int, LiveVariable]) -> str:
         if self.inv_type == InvariantType.VAR:
             return lv[self.data].name
         elif self.inv_type == InvariantType.CONST:

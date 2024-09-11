@@ -4,6 +4,8 @@ import math
 
 from typing import List, Set, Dict, Tuple
 
+from invariant import LiveVariable, VarType
+
 def get_valuations(input_dir: str) -> List[str]:
     valuations = list()
     for file in os.listdir(input_dir):
@@ -112,32 +114,6 @@ def filter_duplicate(valuations: List[Dict[int, int]]) -> List[Dict[int, int]]:
             seen.add(key)
             result.append(val)
     return result
-
-class VarType(enum.Enum):
-    INT = 0
-    BOOL = 1
-    PTR = 2
-
-class LiveVariable():
-    id: int
-    name: str
-    var_type: VarType
-    def __init__(self, id: int, name: str, var_type: str):
-        self.id = id
-        self.name = name
-        if var_type == "int":
-            self.var_type = VarType.INT
-        elif var_type == "bool":
-            self.var_type = VarType.BOOL
-        else:
-            self.var_type = VarType.PTR
-    
-    def __str__(self):
-        return f"LiveVariable(id={self.id}, name={self.name}, var_type={self.var_type})"
-    
-    def __repr__(self):
-        return self.__str__()
-
 
 def get_live_vars(live_vars_file: str) -> Dict[int, LiveVariable]:
     live_vars = dict()

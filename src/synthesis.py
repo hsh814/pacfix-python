@@ -1,18 +1,17 @@
 from typing import List, Set, Dict, Tuple, Union
 
 import utils
+import invariant
 from invariant import Invariant, InvariantType
 
 import enum
 import sys
 
-
-
 class Synthesizer():
-    live_vars: Dict[int, utils.LiveVariable]
+    live_vars: Dict[int, invariant.LiveVariable]
     special_values: List[int]
 
-    def __init__(self, live_vars: Dict[int, utils.LiveVariable]):
+    def __init__(self, live_vars: Dict[int, invariant.LiveVariable]):
         self.live_vars = live_vars
         self.special_values = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 1048575, 2147483647, 4294967295]
     
@@ -23,7 +22,7 @@ class Synthesizer():
                 const_list.append(i)
         return const_list
      
-    def gen_eq_const(self, var: List[utils.LiveVariable]) -> List[Invariant]:
+    def gen_eq_const(self, var: List[invariant.LiveVariable]) -> List[Invariant]:
         invariants = list()
         const_list = self.get_const_list(-10, 100)
         for v in var:
@@ -31,13 +30,13 @@ class Synthesizer():
                 invariants.append(Invariant(InvariantType.EQ, Invariant(InvariantType.VAR, data=v.id), Invariant(InvariantType.CONST, data=i)))
         return invariants
     
-    def gen_non_zero(self, var: List[utils.LiveVariable]) -> List[Invariant]:
+    def gen_non_zero(self, var: List[invariant.LiveVariable]) -> List[Invariant]:
         invariants = list()
         for v in var:
             invariants.append(Invariant(InvariantType.NE, Invariant(InvariantType.VAR, data=v.id), Invariant(InvariantType.CONST, data=0)))
         return invariants
     
-    def gen_ne_const(self, var: List[utils.LiveVariable]) -> List[Invariant]:
+    def gen_ne_const(self, var: List[invariant.LiveVariable]) -> List[Invariant]:
         invariants = list()
         const_list = self.get_const_list(-10, 10)
         for v in var:
@@ -47,7 +46,7 @@ class Synthesizer():
                 invariants.append(Invariant(InvariantType.NE, Invariant(InvariantType.VAR, data=v.id), Invariant(InvariantType.CONST, data=i)))
         return invariants
     
-    def gen_ge_const(self, var: List[utils.LiveVariable]) -> List[Invariant]:
+    def gen_ge_const(self, var: List[invariant.LiveVariable]) -> List[Invariant]:
         invariants = list()
         const_list = self.get_const_list(-10, 10)
         for v in var:
@@ -55,7 +54,7 @@ class Synthesizer():
                 invariants.append(Invariant(InvariantType.GE, Invariant(InvariantType.VAR, data=v.id), Invariant(InvariantType.CONST, data=i)))
         return invariants
     
-    def gen_le_const(self, var: List[utils.LiveVariable]) -> List[Invariant]:
+    def gen_le_const(self, var: List[invariant.LiveVariable]) -> List[Invariant]:
         invariants = list()
         const_list = self.get_const_list(-10, 10)
         for v in var:
@@ -63,7 +62,7 @@ class Synthesizer():
                 invariants.append(Invariant(InvariantType.LE, Invariant(InvariantType.VAR, data=v.id), Invariant(InvariantType.CONST, data=i)))
         return invariants
     
-    def gen_ge_var(self, var: List[utils.LiveVariable]) -> List[Invariant]:
+    def gen_ge_var(self, var: List[invariant.LiveVariable]) -> List[Invariant]:
         invariants = list()
         for v1 in var:
             for v2 in var:
@@ -71,7 +70,7 @@ class Synthesizer():
                     invariants.append(Invariant(InvariantType.GE, Invariant(InvariantType.VAR, data=v1.id), Invariant(InvariantType.VAR, data=v2.id)))
         return invariants
 
-    def gen_diff_ge_const(self, var: List[utils.LiveVariable]) -> List[Invariant]:
+    def gen_diff_ge_const(self, var: List[invariant.LiveVariable]) -> List[Invariant]:
         invariants = list()
         const_list = self.get_const_list(1, 10)
         for v1 in var:
@@ -82,7 +81,7 @@ class Synthesizer():
                     invariants.append(Invariant(InvariantType.GE, Invariant(InvariantType.SUB, Invariant(InvariantType.VAR, data=v1.id), Invariant(InvariantType.VAR, data=v2.id)), Invariant(InvariantType.CONST, data=i)))
         return invariants
     
-    def gen_ge_div_const(self, var: List[utils.LiveVariable]) -> List[Invariant]:
+    def gen_ge_div_const(self, var: List[invariant.LiveVariable]) -> List[Invariant]:
         invariants = list()
         const_list = range(2, 10)
         for v1 in var:
