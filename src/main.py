@@ -6,6 +6,8 @@ import math
 
 import synthesis
 import utils
+import invariant
+import pysmt.shortcuts as smt
 
 from typing import List, Set, Dict, Tuple
 
@@ -14,12 +16,17 @@ def run(argv: List[str]):
     argparser.add_argument("--input-dir", "-i", help="Input directory", required=True)
     argparser.add_argument("--live-vars", "-l", help="Live variables", required=True)
     argparser.add_argument("--output", "-o", help="Output file", required=False, default="")
+    argparser.add_argument("--output-smt", "-s", help="Output directory for smt files", required=False, default="")
     argparser.add_argument("--pac-delta", "-d", help="delta value for pac learning", required=False, default=0.01)
     args = argparser.parse_args(argv)
     input_dir = args.input_dir
     live_vars_file = args.live_vars
     output_file = args.output
     pac_delta = float(args.pac_delta)
+    out_smt_dir = args.output_smt
+    if out_smt_dir != "":
+        if not os.path.exists(out_smt_dir):
+            os.makedirs(out_smt_dir)
     output = sys.stdout
     if output_file:
         output = open(output_file, "w")
@@ -57,8 +64,13 @@ def run(argv: List[str]):
     pac_epsilon_no_uniq = utils.calculate_pac(non_uniq_samples, len(refined_space), pac_delta)
     output.write(f"[metadata] [pac-no-uniq] [delta {pac_delta}] [eps {pac_epsilon_no_uniq}]\n")
     output.write("[final] --------------\n")
+    out_count = 0
     for inv in refined_space:
+        out_count += 1
         output.write(f"[invariant] [expr {inv.to_str(live_vars)}]\n")
+        if out_smt_dir != "":
+            smt_file = os.path.join(out_smt_dir, f"{out_count}.smt")
+            smt.write_smtlib(inv.convert_to_smt(live_vars), smt_file)
 
 def run_uni(argv: List[str]):
     argparser = argparse.ArgumentParser()

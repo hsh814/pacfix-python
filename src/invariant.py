@@ -1,5 +1,9 @@
 from typing import List, Set, Dict, Tuple, Union
 import enum
+import pysmt.shortcuts as smt
+import pysmt.typing as smt_type
+import pysmt.fnode
+import pysmt
 
 class VarType(enum.Enum):
     INT = 0
@@ -10,15 +14,19 @@ class LiveVariable():
     id: int
     name: str
     var_type: VarType
+    var: pysmt.fnode.FNode
     def __init__(self, id: int, name: str, var_type: str):
         self.id = id
         self.name = name
         if var_type == "int":
             self.var_type = VarType.INT
+            self.var = smt.Symbol(name, smt_type.INT)
         elif var_type == "bool":
             self.var_type = VarType.BOOL
+            self.var = smt.Symbol(name, smt_type.BOOL)
         else:
             self.var_type = VarType.PTR
+            self.var = smt.Symbol(name, smt_type.INT)
     
     def __str__(self):
         return f"LiveVariable(id={self.id}, name={self.name}, var_type={self.var_type})"
@@ -82,6 +90,35 @@ class Invariant():
             return str(self.data)
         else:
             return f"({self.left.to_str(lv)} {INVARIANT_MAP[self.inv_type]} {self.right.to_str(lv)})"
+    
+    def convert_to_smt(self, lv: Dict[int, LiveVariable]) -> pysmt.fnode.FNode:
+        if self.inv_type == InvariantType.VAR:
+            return lv[self.data].var
+        elif self.inv_type == InvariantType.CONST:
+            return smt.Int(self.data)
+        else:
+            left = self.left.convert_to_smt(lv)
+            right = self.right.convert_to_smt(lv)
+            if self.inv_type == InvariantType.EQ:
+                return smt.Equals(left, right)
+            elif self.inv_type == InvariantType.NE:
+                return smt.Not(smt.Equals(left, right))
+            elif self.inv_type == InvariantType.GT:
+                return smt.GT(left, right)
+            elif self.inv_type == InvariantType.GE:
+                return smt.GE(left, right)
+            elif self.inv_type == InvariantType.LT:
+                return smt.LT(left, right)
+            elif self.inv_type == InvariantType.LE:
+                return smt.LE(left, right)
+            elif self.inv_type == InvariantType.ADD:
+                return smt.Plus(left, right)
+            elif self.inv_type == InvariantType.SUB:
+                return smt.Minus(left, right)
+            elif self.inv_type == InvariantType.MUL:
+                return smt.Times(left, right)
+            elif self.inv_type == InvariantType.DIV:
+                return smt.Div(left, right)
     
     def compare(self, other: 'Invariant') -> Relation:
         return Relation.EQ
