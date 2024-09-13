@@ -1,9 +1,10 @@
-from typing import List, Set, Dict, Tuple, Union
+from typing import List, Set, Dict, Tuple, Union, TextIO
 import enum
 import pysmt.shortcuts as smt
 import pysmt.typing as smt_type
 import pysmt.fnode
 import pysmt
+import os
 
 class VarType(enum.Enum):
     INT = 0
@@ -185,9 +186,11 @@ class Lattice:
 
 class InvariantManager():
     invs: List[Invariant]
-    lattice_map: Dict[int, Lattice]
-    def __init__(self):
+    lattice_map: Dict[int, Set[Lattice]]
+    live_vars: Dict[int, LiveVariable]
+    def __init__(self, live_vars: Dict[int, LiveVariable]):
         self.invs = list()
+        self.live_vars = live_vars
     
     def add_invariant(self, inv: Invariant) -> int:
         self.invs.append(inv)
@@ -214,5 +217,17 @@ class InvariantManager():
                 self.add_invariant_to_lattice_recursive(l, lattice)
             else:
                 # Create a new lattice
-                self.lattice_map[var] = lattice
+                self.lattice_map[var] = set()
+                self.lattice_map[var].add(lattice)
         return inv_id
+    
+    def dump(self, output: TextIO, out_smt_dir: str):
+        if out_smt_dir != "":
+            if not os.path.exists(out_smt_dir):
+                os.makedirs(out_smt_dir)
+        for i, inv in enumerate(self.invs):
+            output.write(f"{inv.to_str(self.live_vars)}\n")
+            smt_inv = inv.convert_to_smt(self.live_vars)
+            with open(f"{out_smt_dir}/{i}.smt", "w") as f:
+                f.write(smt.serialize(smt_inv))
+

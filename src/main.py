@@ -24,9 +24,6 @@ def run(argv: List[str]):
     output_file = args.output
     pac_delta = float(args.pac_delta)
     out_smt_dir = args.output_smt
-    if out_smt_dir != "":
-        if not os.path.exists(out_smt_dir):
-            os.makedirs(out_smt_dir)
     output = sys.stdout
     if output_file:
         output = open(output_file, "w")
@@ -64,13 +61,10 @@ def run(argv: List[str]):
     pac_epsilon_no_uniq = utils.calculate_pac(non_uniq_samples, len(refined_space), pac_delta)
     output.write(f"[metadata] [pac-no-uniq] [delta {pac_delta}] [eps {pac_epsilon_no_uniq}]\n")
     output.write("[final] --------------\n")
-    out_count = 0
+    inv_manager = invariant.InvariantManager(live_vars)
     for inv in refined_space:
-        out_count += 1
-        output.write(f"[invariant] [expr {inv.to_str(live_vars)}]\n")
-        if out_smt_dir != "":
-            smt_file = os.path.join(out_smt_dir, f"{out_count}.smt")
-            smt.write_smtlib(inv.convert_to_smt(live_vars), smt_file)
+        inv_manager.add_invariant(inv)
+    inv_manager.dump(output, out_smt_dir)
 
 def run_uni(argv: List[str]):
     argparser = argparse.ArgumentParser()
