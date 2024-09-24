@@ -66,6 +66,8 @@ class Synthesizer():
         invariants = list()
         for v1 in var:
             for v2 in var:
+                if v1.var_type != v2.var_type:
+                    continue
                 if v1.id != v2.id:
                     invariants.append(Invariant(InvariantType.GE, Invariant(InvariantType.VAR, data=v1.id), Invariant(InvariantType.VAR, data=v2.id)))
         return invariants
@@ -77,6 +79,8 @@ class Synthesizer():
             for v2 in var:
                 if v1.id == v2.id:
                     continue
+                if v1.var_type != v2.var_type:
+                    continue
                 for i in const_list:
                     invariants.append(Invariant(InvariantType.GE, Invariant(InvariantType.SUB, Invariant(InvariantType.VAR, data=v1.id), Invariant(InvariantType.VAR, data=v2.id)), Invariant(InvariantType.CONST, data=i)))
         return invariants
@@ -87,7 +91,9 @@ class Synthesizer():
         for v1 in var:
             for v2 in var:
                 if v1.id == v2.id:
-                    continue 
+                    continue
+                if v1.var_type != v2.var_type:
+                    continue
                 for i in const_list:
                     invariants.append(Invariant(InvariantType.GE, Invariant(InvariantType.DIV, Invariant(InvariantType.VAR, data=v1.id), Invariant(InvariantType.CONST, data=i)), Invariant(InvariantType.VAR, data=v2.id)))
         return invariants

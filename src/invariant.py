@@ -221,13 +221,30 @@ class InvariantManager():
                 self.lattice_map[var].add(lattice)
         return inv_id
     
+    def get_cond(self, smt_invs: List[pysmt.fnode.FNode]) -> pysmt.fnode.FNode:
+        cond = smt.FALSE()
+        for inv in smt_invs:
+            cond = smt.Or(cond, inv)
+        return cond
+    
+    def reduce(self):
+        store = list()
+        for i, inv in enumerate(self.invs):
+            store.append(inv.convert_to_smt(self.live_vars))
+        cond = self.get_cond(store)
+        cond = smt.simplify(cond)
+
+        model = smt.get_model(cond)
+        if model:
+            print(f"Model: {model}")
+
+    
     def dump(self, output: TextIO, out_smt_dir: str):
         if out_smt_dir != "":
             if not os.path.exists(out_smt_dir):
                 os.makedirs(out_smt_dir)
         for i, inv in enumerate(self.invs):
             output.write(f"{inv.to_str(self.live_vars)}\n")
-            smt_inv = inv.convert_to_smt(self.live_vars)
-            with open(f"{out_smt_dir}/{i}.smt", "w") as f:
-                f.write(smt.serialize(smt_inv))
-
+            if out_smt_dir != "":
+                smt_inv = inv.convert_to_smt(self.live_vars)
+                smt.write_smtlib(smt_inv, f"{out_smt_dir}/{i}.smt")

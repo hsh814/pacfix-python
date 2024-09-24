@@ -56,12 +56,13 @@ def run(argv: List[str]):
     samples = len(neg_vals) + len(pos_vals)
     non_uniq_samples = initial_neg + initial_pos
     output.write(f"[metadata] [valuation] [neg {len(neg_vals)}] [pos {len(pos_vals)}] [uniq {samples}] [init-neg {initial_neg}] [init-pos {initial_pos}] [non-uniq {non_uniq_samples}]\n")
-    pac_epsilon = utils.calculate_pac(samples, len(refined_space), pac_delta)
+    pac_epsilon = utils.calculate_pac(samples, len(hypothesis_space), pac_delta)
     output.write(f"[metadata] [pac] [delta {pac_delta}] [eps {pac_epsilon}]\n")
-    pac_epsilon_no_uniq = utils.calculate_pac(non_uniq_samples, len(refined_space), pac_delta)
+    pac_epsilon_no_uniq = utils.calculate_pac(non_uniq_samples, len(hypothesis_space), pac_delta)
     output.write(f"[metadata] [pac-no-uniq] [delta {pac_delta}] [eps {pac_epsilon_no_uniq}]\n")
     output.write("[final] --------------\n")
     inv_manager = invariant.InvariantManager(live_vars)
+    inv_manager.reduce()
     for inv in refined_space:
         inv_manager.add_invariant(inv)
     inv_manager.dump(output, out_smt_dir)
