@@ -5,6 +5,7 @@ import pysmt.typing as smt_type
 import pysmt.fnode
 import pysmt
 import os
+import traceback
 
 class VarType(enum.Enum):
     INT = 0
@@ -119,7 +120,7 @@ class Invariant():
             elif self.inv_type == InvariantType.MUL:
                 return smt.Times(left, right)
             elif self.inv_type == InvariantType.DIV:
-                return smt.Div(left, right)
+                return smt.And(smt.NotEquals(right, smt.Int(0)), smt.Div(left, right))
     
     def compare(self, other: 'Invariant') -> Relation:
         return Relation.EQ
@@ -248,3 +249,19 @@ class InvariantManager():
             if out_smt_dir != "":
                 smt_inv = inv.convert_to_smt(self.live_vars)
                 smt.write_smtlib(smt_inv, f"{out_smt_dir}/{i}.smt")
+
+        # Satisfiability check
+        combined_inv = smt.And([inv.convert_to_smt(self.live_vars) for inv in self.invs])
+        print(f"Check satisfiability of combined expr: {combined_inv}")
+        try:
+            if smt.is_valid(combined_inv):
+                print(f"Always True")
+            elif smt.is_sat(combined_inv):
+                print(f"Satisfiable")
+            elif smt.is_unsat(combined_inv):
+                print(f"Unsat")
+            else:
+                print(f"Unknown")
+        except Exception as e:
+            print(f"Error: {type(e).__name__}: {str(e)}")
+            traceback.print_exc()

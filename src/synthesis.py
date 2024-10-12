@@ -13,7 +13,7 @@ class Synthesizer():
 
     def __init__(self, live_vars: Dict[int, invariant.LiveVariable]):
         self.live_vars = live_vars
-        self.special_values = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 1048575, 2147483647, 4294967295]
+        self.special_values = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2147483647, 4294967295] # 2048, 4096, 8192, 16384, 32768, 65536, 1048575, 
     
     def get_const_list(self, lowerbound: int, upperbound: int) -> List[int]:
         const_list = list(range(lowerbound, upperbound + 1))
@@ -95,7 +95,7 @@ class Synthesizer():
                 if v1.var_type != v2.var_type:
                     continue
                 for i in const_list:
-                    invariants.append(Invariant(InvariantType.GE, Invariant(InvariantType.DIV, Invariant(InvariantType.VAR, data=v1.id), Invariant(InvariantType.CONST, data=i)), Invariant(InvariantType.VAR, data=v2.id)))
+                    invariants.append(Invariant(InvariantType.LE, Invariant(InvariantType.MUL, Invariant(InvariantType.VAR, data=v1.id), Invariant(InvariantType.CONST, data=i)), Invariant(InvariantType.VAR, data=v2.id)))
         return invariants
     
     
