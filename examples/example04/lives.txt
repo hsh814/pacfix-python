@@ -1,0 +1,4 @@
+0 a_0_ int
+1 a_1_ int
+2 a_2_ int
+3 a_3_ int
