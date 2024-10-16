@@ -1,6 +1,12 @@
 # pacfix-python
 Python re-implementation of [pacfix](https://github.com/pslhy/pacfix/tree/main).
 
+## Install
+```shell
+python3 -m pip install pysmt
+pysmt-install --z3
+```
+
 ## Usage
 To see how it works, check out the examples in the [examples](./examples/) directory.
 
@@ -57,4 +63,22 @@ If not specified, the output will be printed to the standard output.
 [metadata] [pac-no-uniq] [delta 0.01] [eps 0.07939948596531193]
 [final] --------------
 [invariant] [expr (c != 0)]
+```
+
+### Output as SMT format
+Specify the output directory as `-s` or `--output-smt`.
+
+If not specified, it will not stored.
+
+
+```
+python3 ../../src/main.py run -i ./mem -l live-variables.txt -s ./smt
+```
+In `./smt/0.smt`
+
+```
+(set-logic QF_IDL)
+(declare-fun c () Int)
+(assert (let ((.def_0 (= c 0))) (let ((.def_1 (not .def_0))) .def_1)))
+(check-sat)
 ```
