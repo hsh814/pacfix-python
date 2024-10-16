@@ -68,7 +68,7 @@ If not specified, the output will be printed to the standard output.
 ### Output as SMT format
 Specify the output directory as `-s` or `--output-smt`.
 
-If not specified, it will not stored.
+If not specified, it will not be stored.
 
 
 ```
