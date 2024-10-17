@@ -245,7 +245,7 @@ class InvariantManager():
             if not os.path.exists(out_smt_dir):
                 os.makedirs(out_smt_dir)
         for i, inv in enumerate(self.invs):
-            output.write(f"{inv.to_str(self.live_vars)}\n")
+            output.write(f"[invariant] [expr ({inv.to_str(self.live_vars)})]\n")
             if out_smt_dir != "":
                 smt_inv = inv.convert_to_smt(self.live_vars)
                 smt.write_smtlib(smt_inv, f"{out_smt_dir}/{i}.smt")
