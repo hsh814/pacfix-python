@@ -119,13 +119,16 @@ def run_uni(argv: List[str]):
     pac_epsilon_no_uniq = utils.calculate_pac(non_uniq_samples, len(refined_space), pac_delta)
     output.write(f"[metadata] [pac-no-uniq] [delta {pac_delta}] [eps {pac_epsilon_no_uniq}]\n")
     output.write("[final] --------------\n")
+    inv_manager = invariant.InvariantManager(live_vars)
+    inv_manager.reduce()
     for inv in refined_space:
-        output.write(f"[invariant] [expr {inv.to_str(live_vars)}]\n")
+        inv_manager.add_invariant(inv)
+    inv_manager.dump(output, "")
 
 def main(argv: List[str]):
     if len(argv) < 2:
         print("Usage: python main.py run -i <input_dir> -l <live_vars> -o <output_file>")
-        print("Usage: python main.py uni -i <input_dir> -l <live_vars> -o <output_file>")
+        print("Usage: python main.py uni -i <input_dir> -l <live_vars.uni-klee> -f <live_vars> -o <output_file>")
         sys.exit(1)
     mode = argv[1]
     modes = ["run", "uni"]
