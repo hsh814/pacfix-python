@@ -1,15 +1,15 @@
-#!/usr/bin/env python3
 import os
 import sys
 import argparse
 import math
+from typing import List
 
-import synthesis
-import utils
-import invariant
 import pysmt.shortcuts as smt
 
-from typing import List, Set, Dict, Tuple
+from . import invariant
+from . import synthesis
+from . import utils
+
 
 def run(argv: List[str]):
     argparser = argparse.ArgumentParser()

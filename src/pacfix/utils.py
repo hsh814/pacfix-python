@@ -4,7 +4,7 @@ import math
 
 from typing import List, Set, Dict, Tuple
 
-from invariant import LiveVariable, VarType
+from .invariant import LiveVariable, VarType
 
 def get_valuations(input_dir: str) -> List[str]:
     valuations = list()
