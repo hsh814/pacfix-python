@@ -3,7 +3,7 @@ Python re-implementation of [pacfix](https://github.com/pslhy/pacfix/tree/main).
 
 ## Install
 ```shell
-python3 -m pip install pysmt
+python3 -m pip install pacfix
 pysmt-install --z3
 ```
 
@@ -12,7 +12,7 @@ To see how it works, check out the examples in the [examples](./examples/) direc
 
 ```shell
 cd examples/example01
-python3 ../../src/main.py run -i ./mem -l live-variables.txt
+python3 -m pacfix run -i ./mem -l live-variables.txt
 ```
 
 ## Inputs
@@ -72,7 +72,7 @@ If not specified, it will not be stored.
 
 
 ```
-python3 ../../src/main.py run -i ./mem -l live-variables.txt -s ./smt
+python3 -m pacfix run -i ./mem -l live-variables.txt -s ./smt
 ```
 In `./smt/0.smt`
 

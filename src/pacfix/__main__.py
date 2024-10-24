@@ -125,21 +125,23 @@ def run_uni(argv: List[str]):
         inv_manager.add_invariant(inv)
     inv_manager.dump(output, "")
 
-def main(argv: List[str]):
-    if len(argv) < 2:
-        print("Usage: python main.py run -i <input_dir> -l <live_vars> -o <output_file>")
-        print("Usage: python main.py uni -i <input_dir> -l <live_vars.uni-klee> -f <live_vars> -o <output_file>")
+
+def main():
+    # TODO: use argparse's subcomand
+    if len(sys.argv) < 2:
+        print("Usage: python -m pacfix run -i <input_dir> -l <live_vars> -o <output_file>")
+        print("Usage: python -m pacfix uni -i <input_dir> -l <live_vars.uni-klee> -f <live_vars> -o <output_file>")
         sys.exit(1)
-    mode = argv[1]
+    mode = sys.argv[1]
     modes = ["run", "uni"]
     if mode not in modes:
         print(f"Error: mode must be one of {modes}")
         sys.exit(1)
     if mode == "run":
-        run(argv[2:])
+        run(sys.argv[2:])
     elif mode == "uni":
-        run_uni(argv[2:])
-        
+        run_uni(sys.argv[2:])
+
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
