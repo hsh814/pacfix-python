@@ -1,4 +1,4 @@
-from typing import List, Set, Dict, Tuple, Union, TextIO
+from typing import List, Set, Dict, Optional, TextIO
 import enum
 import pysmt.shortcuts as smt
 import pysmt.typing as smt_type
@@ -239,14 +239,10 @@ class InvariantManager():
         if model:
             print(f"Model: {model}")
 
-    
-    def dump(self, output: TextIO, out_smt_dir: str):
-        if out_smt_dir != "":
-            if not os.path.exists(out_smt_dir):
-                os.makedirs(out_smt_dir)
+    def dump(self, output: TextIO, out_smt_dir: Optional[str]):
         for i, inv in enumerate(self.invs):
             output.write(f"[invariant] [expr {inv.to_str(self.live_vars)}]\n")
-            if out_smt_dir != "":
+            if out_smt_dir is not None:
                 smt_inv = inv.convert_to_smt(self.live_vars)
                 smt.write_smtlib(smt_inv, f"{out_smt_dir}/{i}.smt")
 
