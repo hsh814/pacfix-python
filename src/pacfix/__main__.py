@@ -1,39 +1,22 @@
 import os
 import sys
 import argparse
-import math
-from typing import List
+from contextlib import closing
+from functools import partial
 
-import pysmt.shortcuts as smt
-
+from . import __version__
 from . import invariant
 from . import synthesis
 from . import utils
 
 
-def run(argv: List[str]):
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument("--input-dir", "-i", help="Input directory", required=True)
-    argparser.add_argument("--live-vars", "-l", help="Live variables", required=True)
-    argparser.add_argument("--output", "-o", help="Output file", required=False, default="")
-    argparser.add_argument("--output-smt", "-s", help="Output directory for smt files", required=False, default="")
-    argparser.add_argument("--pac-delta", "-d", help="delta value for pac learning", required=False, default=0.01)
-    args = argparser.parse_args(argv)
+def run(args: argparse.Namespace):
     input_dir = args.input_dir
-    live_vars_file = args.live_vars
-    output_file = args.output
-    pac_delta = float(args.pac_delta)
-    out_smt_dir = args.output_smt
-    output = sys.stdout
-    if output_file:
-        output = open(output_file, "w")
-    paths = [input_dir, live_vars_file]
-    for path in paths:
-        if not os.path.exists(path):
-            print(f"Error: file {input_dir} not found!")
-            sys.exit(1)
+    pac_delta = args.pac_delta
+    output = args.output
     # create initial hypothesis space
-    live_vars = utils.get_live_vars(live_vars_file)
+    with closing(args.live_vars):
+        live_vars = utils.get_live_vars(args.live_vars)
     synthesizer = synthesis.Synthesizer(live_vars)
     hypothesis_space = synthesizer.synthesize()
     original_size = len(hypothesis_space)
@@ -65,32 +48,19 @@ def run(argv: List[str]):
     inv_manager.reduce()
     for inv in refined_space:
         inv_manager.add_invariant(inv)
-    inv_manager.dump(output, out_smt_dir)
+    inv_manager.dump(output, args.output_smt)
 
-def run_uni(argv: List[str]):
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument("--input-dir", "-i", help="Input directory", required=True)
-    argparser.add_argument("--live-vars", "-l", help="Live variables", required=True)
-    argparser.add_argument("--lv-file", "-f", help="Live variables file those are actually used", required=False, default="")
-    argparser.add_argument("--output", "-o", help="Output file", required=False, default="")
-    argparser.add_argument("--pac-delta", "-d", help="delta value for pac learning", required=False, default=0.01)
-    args = argparser.parse_args(argv)
+
+def run_uni(args: argparse.Namespace):
     input_dir = args.input_dir
-    live_vars_file = args.live_vars
-    output_file = args.output
-    pac_delta = float(args.pac_delta)
-    output = sys.stdout
-    if output_file:
-        output = open(output_file, "w")
-    paths = [input_dir, live_vars_file]
-    for path in paths:
-        if not os.path.exists(path):
-            print(f"Error: file {input_dir} not found!")
-            sys.exit(1)
+    pac_delta = args.pac_delta
+    output = args.output
     # create initial hypothesis space
-    live_vars = utils.get_live_vars(live_vars_file)
-    if args.lv_file != "":
-        used_lvs = utils.get_lv_file(args.lv_file)
+    with closing(args.live_vars):
+        live_vars = utils.get_live_vars(args.live_vars)
+    if args.lv_file is not None:
+        with closing(args.lv_file):
+            used_lvs = utils.get_lv_file(args.lv_file)
         live_vars = {k: v for k, v in live_vars.items() if v.name in used_lvs}
     synthesizer = synthesis.Synthesizer(live_vars)
     hypothesis_space = synthesizer.synthesize()
@@ -126,21 +96,49 @@ def run_uni(argv: List[str]):
     inv_manager.dump(output, "")
 
 
+def directory(path: str, read: bool) -> str:
+    if not os.path.isdir(path):
+        if read:
+            raise argparse.ArgumentTypeError(f"{path} is not a directory")
+        try:
+            os.mkdir(path)
+        except Exception as e:
+            raise argparse.ArgumentTypeError(f"mkdir: {e}")
+    return path
+
+
 def main():
-    # TODO: use argparse's subcomand
-    if len(sys.argv) < 2:
-        print("Usage: python -m pacfix run -i <input_dir> -l <live_vars> -o <output_file>")
-        print("Usage: python -m pacfix uni -i <input_dir> -l <live_vars.uni-klee> -f <live_vars> -o <output_file>")
-        sys.exit(1)
-    mode = sys.argv[1]
-    modes = ["run", "uni"]
-    if mode not in modes:
-        print(f"Error: mode must be one of {modes}")
-        sys.exit(1)
-    if mode == "run":
-        run(sys.argv[2:])
-    elif mode == "uni":
-        run_uni(sys.argv[2:])
+    arg_parser = argparse.ArgumentParser(prog="pacfix")
+    arg_parser.add_argument('-v', '--version', action='version',
+                            version=f'%(prog)s {__version__}')
+    arg_subparsers = arg_parser.add_subparsers(dest="mode", required=True)
+    arg_parser_base = argparse.ArgumentParser(add_help=False)
+    arg_parser_base.add_argument("-i", "--input-dir", metavar="DIR",
+        help="Input directory",
+        type=partial(directory, read=True), required=True)
+    arg_parser_base.add_argument("-l", "--live-vars", metavar="FILE",
+        help="Live variables", type=argparse.FileType('r'), required=True)
+    arg_parser_base.add_argument("-D", "--pac-delta", metavar="NUMBER",
+        help="delta value for pac learning", type=float, default=0.01)
+    arg_parser_base.add_argument("-o", "--output", metavar="FILE",
+        help="Output file", type=argparse.FileType('w'), default=sys.stdout)
+    arg_parser_run = arg_subparsers.add_parser('run',
+        parents=[arg_parser_base])
+    arg_parser_run.add_argument("-s", "--output-smt", metavar="DIR",
+        help="Output directory for smt files",
+        type=partial(directory, read=False))
+    arg_parser_uni = arg_subparsers.add_parser('uni',
+        parents=[arg_parser_base])
+    arg_parser_uni.add_argument("-f", "--lv-file", metavar="FILE",
+        help="Live variables file those are actually used",
+        type=argparse.FileType('r'))
+    args = arg_parser.parse_args()
+    if args.mode == "run":
+        with closing(args.output):
+            run(args)
+    elif args.mode == "uni":
+        with closing(args.output):
+            run_uni(args)
 
 
 if __name__ == "__main__":
