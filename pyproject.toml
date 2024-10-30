@@ -6,13 +6,14 @@ build-backend = "flit_core.buildapi"
 name = "pacfix"
 description = "PAC-learning-based program systhesizer"
 readme = "README.md"
-requires-python = ">=3.9"
-authors = [ { name = "한승헌", email = "shhan@unist.ac.kr" } ]
-maintainers = [ { name = "한승헌", email = "shhan@unist.ac.kr" } ]
+requires-python = ">=3.6"
+authors = [ { name = "Seungheon Han", email = "shhan@unist.ac.kr" } ]
+maintainers = [ { name = "Seungheon Han", email = "shhan@unist.ac.kr" } ]
 keywords = [ "apr" ]
 classifiers = [
     "Development Status :: 1 - Planning",
     "Environment :: Console",
+    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python" ]
 dynamic = [ "version" ]
