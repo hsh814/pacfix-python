@@ -78,29 +78,29 @@ def directory(path: str, read: bool) -> str:
 
 def main():
     arg_parser = argparse.ArgumentParser(prog="pacfix")
-    arg_parser.add_argument('-v', '--version', action='version',
-                            version=f'%(prog)s {__version__}')
+    arg_parser.add_argument("-v", "--version", action="version",
+                            version=f"%(prog)s {__version__}")
     arg_subparsers = arg_parser.add_subparsers(dest="mode", required=True)
     arg_parser_base = argparse.ArgumentParser(add_help=False)
     arg_parser_base.add_argument("-i", "--input-dir", metavar="DIR",
         help="Input directory",
         type=partial(directory, read=True), required=True)
     arg_parser_base.add_argument("-l", "--live-vars", metavar="FILE",
-        help="Live variables", type=argparse.FileType('r'), required=True)
+        help="Live variables", type=argparse.FileType("r"), required=True)
     arg_parser_base.add_argument("-D", "--pac-delta", metavar="NUMBER",
         help="delta value for pac learning", type=float, default=0.01)
     arg_parser_base.add_argument("-o", "--output", metavar="FILE",
-        help="Output file", type=argparse.FileType('w'), default=sys.stdout)
-    arg_parser_run = arg_subparsers.add_parser('run',
+        help="Output file", type=argparse.FileType("w"), default=sys.stdout)
+    arg_parser_run = arg_subparsers.add_parser("run",
         parents=[arg_parser_base])
     arg_parser_run.add_argument("-s", "--output-smt", metavar="DIR",
         help="Output directory for smt files",
         type=partial(directory, read=False))
-    arg_parser_uni = arg_subparsers.add_parser('uni',
+    arg_parser_uni = arg_subparsers.add_parser("uni",
         parents=[arg_parser_base])
     arg_parser_uni.add_argument("-f", "--lv-file", metavar="FILE",
         help="Live variables file those are actually used",
-        type=argparse.FileType('r'))
+        type=argparse.FileType("r"))
     args = arg_parser.parse_args()
     if args.mode == "run":
         with closing(args.output):
