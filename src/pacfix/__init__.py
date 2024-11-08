@@ -6,7 +6,7 @@ from .utils import calculate_pac, filter_duplicate
 from .debug import enable_debug, disable_debug, print_debug, print_warning
 
 __all__ = ["__version__", "Result", "learn"]
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 
 class Result(NamedTuple):
