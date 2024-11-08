@@ -1,10 +1,8 @@
 import os
-import enum
 import math
+from typing import List, Dict, TextIO, Tuple
 
-from typing import List, Set, Dict, Tuple
-
-from invariant import LiveVariable, VarType
+from .invariant import LiveVariable, VarType
 
 def get_valuations(input_dir: str) -> List[str]:
     valuations = list()
@@ -115,24 +113,20 @@ def filter_duplicate(valuations: List[Dict[int, int]]) -> List[Dict[int, int]]:
             result.append(val)
     return result
 
-def get_live_vars(live_vars_file: str) -> Dict[int, LiveVariable]:
+
+def get_live_vars(live_vars_file: TextIO) -> dict[int, LiveVariable]:
     live_vars = dict()
-    with open(live_vars_file, "r") as f:
-        for line in f:
-            line = line.strip()
-            if len(line) > 2:
-                id, name, var_type = line.split()
-                live_vars[int(id)] = LiveVariable(int(id), name, var_type)
+    for line in live_vars_file:
+        line = line.strip()
+        if len(line) > 2:
+            id, name, var_type = line.split()
+            live_vars[int(id)] = LiveVariable(int(id), name, var_type)
     return live_vars
 
 
-def get_lv_file(lv_file: str) -> Set[str]:
-    live_vars = set()
-    with open(lv_file, "r") as f:
-        for line in f:
-            if len(line.strip()) > 0:
-                live_vars.add(line.strip())
-    return live_vars
+def get_lv_file(lv_file: TextIO) -> set[str]:
+    return set(filter(None, map(str.strip, lv_file)))
+
 
 def calculate_pac(samples: int, hypothesis_space: int, delta: float) -> float:
     if hypothesis_space == 0 or samples == 0:

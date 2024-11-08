@@ -1,8 +1,8 @@
 from typing import List, Set, Dict, Tuple, Union
 
-import utils
-import invariant
-from invariant import Invariant, InvariantType
+from . import utils
+from . import invariant
+from .invariant import Invariant, InvariantType
 
 import enum
 import sys
