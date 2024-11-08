@@ -6,6 +6,7 @@ import pysmt.fnode
 import pysmt
 import os
 import traceback
+from .debug import check_debug, enable_debug, disable_debug, print_debug, print_warning
 
 class VarType(enum.Enum):
     INT = 0
@@ -236,7 +237,7 @@ class InvariantManager():
 
         model = smt.get_model(cond)
         if model:
-            print(f"Model: {model}")
+            print_debug(f"Model: {model}")
 
     def dump(self, output: TextIO, out_smt_dir: Optional[str]):
         for i, inv in enumerate(self.invs):
@@ -245,18 +246,20 @@ class InvariantManager():
                 smt_inv = inv.convert_to_smt(self.live_vars)
                 smt.write_smtlib(smt_inv, f"{out_smt_dir}/{i}.smt")
 
+        if not check_debug():
+            return
         # Satisfiability check
         combined_inv = smt.And([inv.convert_to_smt(self.live_vars) for inv in self.invs])
-        print(f"Check satisfiability of combined expr: {combined_inv}")
+        print_debug(f"Check satisfiability of combined expr: {combined_inv}")
         try:
             if smt.is_valid(combined_inv):
-                print(f"Always True")
+                print_debug(f"Always True")
             elif smt.is_sat(combined_inv):
-                print(f"Satisfiable")
+                print_debug(f"Satisfiable")
             elif smt.is_unsat(combined_inv):
-                print(f"Unsat")
+                print_debug(f"Unsat")
             else:
-                print(f"Unknown")
+                print_debug(f"Unknown")
         except Exception as e:
-            print(f"Error: {type(e).__name__}: {str(e)}")
+            print_debug(f"Error: {type(e).__name__}: {str(e)}")
             traceback.print_exc()

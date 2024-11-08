@@ -3,6 +3,7 @@ from typing import List, Set, Dict, Tuple, Union
 from . import utils
 from . import invariant
 from .invariant import Invariant, InvariantType
+from .debug import print_debug
 
 import enum
 import sys
@@ -163,13 +164,13 @@ class Synthesizer():
                     valid = False
                     break
             if not valid:
-                print(f"Invalid neg: {inv} from {vals}", file=sys.stderr)
+                print_debug(f"Invalid neg: {inv} from {vals}")
                 continue
             # positive validation: invariant should be true
             for vals in pos_vals:
                 if not self.evaluate(inv, vals):
                     valid = False
-                    print(f"Invalid pos: {inv} from {vals}", file=sys.stderr)
+                    print_debug(f"Invalid pos: {inv} from {vals}")
                     break
             if valid:
                 refined.append(inv)

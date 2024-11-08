@@ -4,7 +4,7 @@ import argparse
 from contextlib import closing
 from functools import partial
 
-from . import __version__, Result, learn, utils
+from . import __version__, Result, learn, utils, enable_debug
 
 
 def run(args: argparse.Namespace):
@@ -91,6 +91,8 @@ def main():
         help="delta value for pac learning", type=float, default=0.01)
     arg_parser_base.add_argument("-o", "--output", metavar="FILE",
         help="Output file", type=argparse.FileType("w"), default=sys.stdout)
+    arg_parser_base.add_argument("-d", "--debug", action="store_true",
+                                 help="Enable debug log")
     arg_parser_run = arg_subparsers.add_parser("run",
         parents=[arg_parser_base])
     arg_parser_run.add_argument("-s", "--output-smt", metavar="DIR",
@@ -102,6 +104,8 @@ def main():
         help="Live variables file those are actually used",
         type=argparse.FileType("r"))
     args = arg_parser.parse_args()
+    if args.debug:
+        enable_debug()
     if args.mode == "run":
         with closing(args.output):
             run(args)

@@ -4,6 +4,8 @@ Python re-implementation of [pacfix](https://github.com/pslhy/pacfix/tree/main).
 ## Install
 ```shell
 python3 -m pip install pacfix
+# Or, you can install from source code
+# python3 -m pip install .
 pysmt-install --z3
 ```
 
@@ -82,3 +84,6 @@ In `./smt/0.smt`
 (assert (let ((.def_0 (= c 0))) (let ((.def_1 (not .def_0))) .def_1)))
 (check-sat)
 ```
+
+### Debug log
+You can enable debug log with `-d` option.
