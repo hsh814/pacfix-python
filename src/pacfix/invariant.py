@@ -197,14 +197,13 @@ class InvariantManager():
         self.invs.append(inv)
         return len(self.invs) - 1
     
-    def get_invariant_by_id(self, id: int) -> List[Invariant]:
+    def get_invariant_by_id(self, id: int) -> Optional[Invariant]:
         if id < 0 or id >= len(self.invs):
             return None
         return self.invs[id]
     
-    def add_invariant_to_lattice_recursive(self, parent: Lattice, inv: Lattice):
-        for c in parent.get_children():
-            pass
+    def add_invariant_to_lattice_recursive(self, parent: Set[Lattice], inv: Lattice):
+        pass
     
     def add_invariant_to_lattice(self, inv: Invariant) -> int:
         inv_id = self.add_invariant(inv)
