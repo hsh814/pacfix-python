@@ -18,7 +18,7 @@ def parse_valuation(neg: List[str], pos: List[str]) -> Tuple[List[Dict[int, int]
     for valuation in neg:
         groups: List[Dict[int, int]] = list()
         in_group = False
-        val_map = dict()
+        val_map: Dict[int, int] = dict()
         for line in valuation.split("\n"):
             if line.startswith("#") or len(line) < 3:
                 continue
@@ -39,7 +39,7 @@ def parse_valuation(neg: List[str], pos: List[str]) -> Tuple[List[Dict[int, int]
             else:
                 neg_vals.append(val_map)
     for valuation in pos:
-        groups: List[Dict[int, int]] = list()
+        groups = list()
         in_group = False
         val_map = dict()
         for line in valuation.split("\n"):
@@ -58,12 +58,12 @@ def parse_valuation(neg: List[str], pos: List[str]) -> Tuple[List[Dict[int, int]
             pos_vals.append(val_map)
     return neg_vals, pos_vals
 
-def parse_valuations_uni(neg: List[str], pos: List[str]) -> List[Dict[int, int]]:
+def parse_valuations_uni(neg: List[str], pos: List[str]) -> Tuple[List[Dict[int, int]], List[Dict[int, int]]]:
     neg_vals = list()
     pos_vals = list()
     for valuation in neg:
         groups: List[Dict[int, int]] = list()
-        val_map = dict()
+        val_map: Dict[int, int] = dict()
         for line in valuation.split("\n"):
             if line.startswith("#") or len(line) < 3:
                 continue
@@ -84,7 +84,7 @@ def parse_valuations_uni(neg: List[str], pos: List[str]) -> List[Dict[int, int]]
             else:
                 neg_vals.append(val_map)
     for valuation in pos:
-        groups: List[Dict[int, int]] = list()
+        groups = list()
         in_group = False
         val_map = dict()
         for line in valuation.split("\n"):

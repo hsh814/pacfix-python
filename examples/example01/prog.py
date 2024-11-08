@@ -1,5 +1,8 @@
 import random
-def my_program(x: int, y: int, z: int) -> int:
+from typing import Tuple
+
+
+def my_program(x: int, y: int, z: int) -> Tuple[int, str, bool]:
     b = x + y
     c = x - y
     res = ""
