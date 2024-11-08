@@ -1,6 +1,6 @@
 import os
 import math
-from typing import List, Dict, TextIO, Tuple
+from typing import List, Dict, TextIO, Tuple, Set
 
 from .invariant import LiveVariable, VarType
 
@@ -114,7 +114,7 @@ def filter_duplicate(valuations: List[Dict[int, int]]) -> List[Dict[int, int]]:
     return result
 
 
-def get_live_vars(live_vars_file: TextIO) -> dict[int, LiveVariable]:
+def get_live_vars(live_vars_file: TextIO) -> Dict[int, LiveVariable]:
     live_vars = dict()
     for line in live_vars_file:
         line = line.strip()
@@ -124,7 +124,7 @@ def get_live_vars(live_vars_file: TextIO) -> dict[int, LiveVariable]:
     return live_vars
 
 
-def get_lv_file(lv_file: TextIO) -> set[str]:
+def get_lv_file(lv_file: TextIO) -> Set[str]:
     return set(filter(None, map(str.strip, lv_file)))
 
 

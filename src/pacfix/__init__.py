@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, List, Dict, Set, Tuple
 
 from .invariant import InvariantManager, LiveVariable
 from .synthesis import Synthesizer
@@ -16,14 +16,14 @@ class Result(NamedTuple):
     pac_epsilon: float
     pac_epsilon_no_uniq: float
     # TODO: move InvariantManager.dump out
-    # and pass around just list[Invariant]
+    # and pass around just List[Invariant]
     inv_mgr: InvariantManager
 
 
-def learn(live_vars: dict[int, LiveVariable],
-          neg_vals_init: list[dict[int, int]],
-          pos_vals_init: list[dict[int, int]],
-          pac_delta: float) -> Result:
+def learn(live_vars: Dict[int, LiveVariable],
+          neg_vals_init: List[Dict[int, int]],
+          pos_vals_init: List[Dict[int, int]],
+          pac_delta: float):
     synthesizer = Synthesizer(live_vars)
     hypothesis_space = synthesizer.synthesize()
     size_orig = len(hypothesis_space)
