@@ -28,12 +28,15 @@ class Synthesizer():
         const_list = self.get_const_list(-10, 100)
         for v in var:
             for i in const_list:
+                if i == 0:
+                    continue
                 invariants.append(Invariant(InvariantType.EQ, Invariant(InvariantType.VAR, data=v.id), Invariant(InvariantType.CONST, data=i)))
         return invariants
     
-    def gen_non_zero(self, var: List[invariant.LiveVariable]) -> List[Invariant]:
+    def gen_zero_non_zero(self, var: List[invariant.LiveVariable]) -> List[Invariant]:
         invariants = list()
         for v in var:
+            invariants.append(Invariant(InvariantType.EQ, Invariant(InvariantType.VAR, data=v.id), Invariant(InvariantType.CONST, data=0)))
             invariants.append(Invariant(InvariantType.NE, Invariant(InvariantType.VAR, data=v.id), Invariant(InvariantType.CONST, data=0)))
         return invariants
     
@@ -137,7 +140,7 @@ class Synthesizer():
         # Equal to a constant
         invariants.extend(self.gen_eq_const(int_live_vars))
         # Non zero
-        invariants.extend(self.gen_non_zero(live_vars))
+        invariants.extend(self.gen_zero_non_zero(live_vars))
         # Not equal to a constant
         invariants.extend(self.gen_ne_const(int_live_vars))
         # Greater than or equal to a constant

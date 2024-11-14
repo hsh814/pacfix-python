@@ -3,8 +3,12 @@ import math
 from typing import List, Dict, TextIO, Tuple, Set
 
 from .invariant import LiveVariable, VarType
+from .debug import print_debug
 
 def get_valuations(input_dir: str) -> List[str]:
+    if not os.path.exists(input_dir):
+        print_debug(f"Directory {input_dir} does not exist")
+        return list()
     valuations = list()
     for file in os.listdir(input_dir):
         with open(os.path.join(input_dir, file), "r") as f:

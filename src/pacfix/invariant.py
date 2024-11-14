@@ -26,7 +26,7 @@ class LiveVariable():
             self.var = smt.Symbol(name, smt_type.INT)
         elif var_type == "bool":
             self.var_type = VarType.BOOL
-            self.var = smt.Symbol(name, smt_type.BOOL)
+            self.var = smt.Symbol(name, smt_type.INT)
         else:
             self.var_type = VarType.PTR
             self.var = smt.Symbol(name, smt_type.INT)
